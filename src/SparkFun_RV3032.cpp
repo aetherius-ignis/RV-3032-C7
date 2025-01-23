@@ -210,7 +210,7 @@ uint32_t RV3032::getEpoch()
 	tm.tm_min = BCDtoDEC(_time[TIME_MINUTES]);
 	tm.tm_sec = BCDtoDEC(_time[TIME_SECONDS]);
 
-  return mktime(&tm);
+  return timegm(&tm);
 }
 
 //Sets time using UNIX Epoch time
@@ -734,4 +734,23 @@ bool RV3032::readMultipleRegisters(uint8_t addr, uint8_t * dest, uint8_t len)
 	}
 	
 	return(true);
+}
+
+time_t RV3032::timegm(struct tm* tm) {
+	// Convert to local time
+	time_t t = mktime(tm);
+	if (t == -1)
+	{
+		return -1;
+	}
+	
+	// Get the corresponding UTC time
+	struct tm* gmt = gmtime(&t);
+	time_t utc_time = mktime(gmt);
+	
+	// Calculate the difference between local time and UTC
+	double diff = difftime(utc_time, t);
+	
+	// Adjust local time to UTC
+	return t - (time_t)diff;
 }
