@@ -293,4 +293,5 @@ public:
 	uint8_t _time[TIME_ARRAY_LENGTH];
 	bool _isTwelveHour = true;
 	TwoWire *_i2cPort;
+        time_t timegm(struct tm* tm);
 };
